@@ -11,3 +11,8 @@ export const registerSchema = Joi.object({
     "string.uri": "Profile picture must be a valid URL",
   }),
 });
+
+export const loginSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().required(),
+});

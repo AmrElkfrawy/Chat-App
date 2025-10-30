@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import AppError from "../lib/AppError.js";
+import { ENV } from "../lib/env.js";
 
 /**
  * Handles Mongoose CastError (invalid _id or similar)
@@ -115,9 +116,9 @@ const globalErrorHandler = (
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
-  if (process.env.NODE_ENV === "development") {
+  if (ENV.NODE_ENV === "development") {
     sendErrorDev(err, req, res);
-  } else if (process.env.NODE_ENV === "production") {
+  } else if (ENV.NODE_ENV === "production") {
     let error = { ...err, message: err.message };
 
     if (error.name === "CastError") error = handleCastErrorDB(error);

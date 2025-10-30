@@ -1,16 +1,12 @@
 import express from "express";
-import dotenv from "dotenv";
-
-import apiRouter from "./routes/index.js";
+import AppError from "./lib/AppError.js";
 import { connectDB } from "./lib/db.js";
 import globalErrorHandler from "./middlewares/error.middleware.js";
-import AppError from "./lib/AppError.js";
-
-// Load environment variables
-dotenv.config();
+import apiRouter from "./routes/index.js";
+import { ENV } from "./lib/env.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = ENV.PORT;
 
 app.use(express.json());
 
@@ -27,7 +23,9 @@ app.all("/{*any}", (req, res, next) => {
 // Error Middleware
 app.use(globalErrorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
-  connectDB();
+// Connect to DB then start server
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`);
+  });
 });

@@ -4,6 +4,7 @@ import AppError from "../lib/AppError.js";
 
 export const validateRequest = (schema: Schema) => {
   return (req: Request, res: Response, next: NextFunction): void => {
+    if (!req.body) req.body = {};
     const { error } = schema.validate(req.body, {
       abortEarly: false,
       presence: "required",
@@ -15,7 +16,6 @@ export const validateRequest = (schema: Schema) => {
         .join(", ");
       return next(new AppError(message, 400));
     }
-
     next();
   };
 };
