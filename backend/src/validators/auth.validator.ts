@@ -16,3 +16,7 @@ export const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
 });
+
+export const updateProfileSchema = Joi.object({
+  fullName: Joi.string().min(3).max(20).optional(),
+});

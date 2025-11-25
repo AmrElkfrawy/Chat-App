@@ -3,8 +3,10 @@ import AppError from "../lib/AppError.js";
 import asyncHandler from "../lib/asyncHandler.js";
 import User from "../models/User.js";
 
+import type { IUser } from "../models/User.js";
 import type { NextFunction, Request, Response } from "express";
 import type { Secret, SignOptions } from "jsonwebtoken";
+import cloudinary, { uploadToCloudinary } from "../lib/cloudinary.js";
 
 import { ENV } from "../lib/env.js";
 
@@ -108,6 +110,77 @@ export const logout = asyncHandler(
     return res.status(200).json({
       status: "success",
       message: "Logged out successfully",
+    });
+  }
+);
+
+/**
+ * Update user profile controller
+ * @param req
+ * @param res
+ * @param next
+ * @return Updated user data
+ */
+export const updateProfile = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user.id;
+    const fullName = req.body?.fullName?.trim();
+
+    const updateData: Partial<IUser> = {};
+
+    if (fullName) updateData.fullName = fullName;
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+      runValidators: true,
+    }).select("-password");
+
+    if (!updatedUser) {
+      return next(new AppError("User not found", 404));
+    }
+
+    return res.status(200).json({
+      status: "success",
+      data: { user: updatedUser },
+    });
+  }
+);
+
+/**
+ * Update user profile picture controller
+ * @param req
+ * @param res
+ * @param next
+ * @return Updated user data with new profile picture URL
+ */
+export const updateProfilePicture = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user.id;
+
+    if (!req.file) {
+      return next(new AppError("No file uploaded", 400));
+    }
+
+    let result = await uploadToCloudinary(req.file.buffer, {
+      folder: "profile_pictures",
+      transformation: [
+        { width: 20, height: 20, crop: "fill" },
+        { quality: 60 },
+      ],
+    });
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePicUrl: result.secure_url },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return next(new AppError("User not found", 404));
+    }
+
+    return res.status(200).json({
+      status: "success",
+      data: { user: updatedUser },
     });
   }
 );
