@@ -6,7 +6,7 @@ import User from "../models/User.js";
 import type { IUser } from "../models/User.js";
 import type { NextFunction, Request, Response } from "express";
 import type { Secret, SignOptions } from "jsonwebtoken";
-import cloudinary, { uploadToCloudinary } from "../lib/cloudinary.js";
+import { uploadSingleToCloudinary } from "../lib/cloudinary.js";
 
 import { ENV } from "../lib/env.js";
 
@@ -157,20 +157,21 @@ export const updateProfilePicture = asyncHandler(
     const userId = req.user.id;
 
     if (!req.file) {
-      return next(new AppError("No file uploaded", 400));
+      return next(new AppError("No single file was uploaded", 400));
     }
 
-    let result = await uploadToCloudinary(req.file.buffer, {
+    let result = await uploadSingleToCloudinary(req.file.buffer, {
+      public_id: userId,
       folder: "profile_pictures",
       transformation: [
-        { width: 20, height: 20, crop: "fill" },
+        { width: 200, height: 200, crop: "fill" },
         { quality: 60 },
       ],
     });
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { profilePicUrl: result.secure_url },
+      { profilePic: result.secure_url },
       { new: true, runValidators: true }
     ).select("-password");
 

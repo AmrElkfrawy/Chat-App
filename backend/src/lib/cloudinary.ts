@@ -8,19 +8,21 @@ cloudinary.config({
 });
 
 interface uploadOptions {
+  public_id: string;
   folder: string;
   resource_type?: "image" | "video" | "raw";
   overwrite?: boolean;
   transformation: Array<Record<string, string | number>>;
 }
 
-const uploadToCloudinary = (
+const uploadSingleToCloudinary = (
   buffer: Buffer,
   options: uploadOptions
 ): Promise<any> =>
   new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
+        public_id: options.public_id,
         folder: options.folder,
         resource_type: options.resource_type ?? "image",
         transformation: options.transformation,
@@ -35,5 +37,4 @@ const uploadToCloudinary = (
     stream.end(buffer);
   });
 
-export default cloudinary;
-export { uploadToCloudinary };
+export { uploadSingleToCloudinary };
