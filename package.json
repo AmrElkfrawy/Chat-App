@@ -16,7 +16,8 @@
   "dependencies": {
     "cloudinary": "^1.41.3",
     "multer": "^2.0.2",
-    "multer-storage-cloudinary": "^4.0.0"
+    "multer-storage-cloudinary": "^4.0.0",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "@types/multer": "^2.0.0"

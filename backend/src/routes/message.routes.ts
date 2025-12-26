@@ -1,10 +1,27 @@
 import { Router } from "express";
-
-import type { Request, Response, NextFunction } from "express";
+import {
+  getAllContacts,
+  getChatPartners,
+  getMessagesByUserId,
+  sendMessage,
+} from "../controllers/message.controller.js";
+import { protect } from "../middlewares/auth.middleware.js";
+import upload from "../lib/multer.js";
+import { validateRequest } from "../middlewares/validate.middleware.js";
+import { sendMessageSchema } from "../validators/message.validator.js";
 
 const router = Router();
-router.get("/send", (req: Request, res: Response, next: NextFunction) => {
-  return res.status(200).json({ message: "send" });
-});
+
+router.use(protect);
+
+router.get("/contacts", getAllContacts);
+router.get("/chats", getChatPartners);
+router.get("/:id", getMessagesByUserId);
+router.post(
+  "/send/:id",
+  upload.single("image"),
+  validateRequest(sendMessageSchema),
+  sendMessage
+);
 
 export default router;

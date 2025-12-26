@@ -3,6 +3,21 @@ import AppError from "../lib/AppError.js";
 import { ENV } from "../lib/env.js";
 
 /**
+ * Handles multer unexpected file error
+ * @param err
+ * @returns new AppError
+ */
+const handleMulterError = (err: any): AppError => {
+  let message = "File upload error.";
+  if (err.code === "LIMIT_FILE_SIZE") {
+    message = "File size is too large.";
+  } else if (err.code === "LIMIT_UNEXPECTED_FILE") {
+    message = "Unexpected file field. Please check the field name.";
+  }
+  return new AppError(message, 400);
+};
+
+/**
  * Handles Mongoose CastError (invalid _id or similar)
  * @param err
  * @returns new AppError
@@ -115,21 +130,19 @@ const globalErrorHandler = (
 ): void => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-
   if (ENV.NODE_ENV === "development") {
     sendErrorDev(err, req, res);
   } else if (ENV.NODE_ENV === "production") {
-    let error = { ...err, message: err.message };
+    let error = JSON.parse(JSON.stringify(err));
+    error.message = err.message;
 
     if (error.name === "CastError") error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-    if (
-      error._message === "User validation failed" ||
-      error.name === "ValidationError"
-    )
+    if (error.name === "ValidationError")
       error = handleValidationErrorDB(error);
     if (error.name === "JsonWebTokenError") error = handleJWTError();
     if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
+    if (error.name === "MulterError") error = handleMulterError(error);
 
     sendErrorProd(error, req, res);
   }

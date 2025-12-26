@@ -125,6 +125,12 @@ export const updateProfile = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user.id;
     const fullName = req.body?.fullName?.trim();
+    console.log(
+      "Updating profile for user:",
+      userId,
+      " with fullName:",
+      fullName
+    );
 
     const updateData: Partial<IUser> = {};
 

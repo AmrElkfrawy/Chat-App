@@ -18,5 +18,5 @@ export const loginSchema = Joi.object({
 });
 
 export const updateProfileSchema = Joi.object({
-  fullName: Joi.string().min(3).max(20).optional(),
+  fullName: Joi.string().min(3).max(20),
 });
