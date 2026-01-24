@@ -41,5 +41,5 @@ export const protect = asyncHandler(
     // Attach user to request
     req.user = user;
     next();
-  }
+  },
 );

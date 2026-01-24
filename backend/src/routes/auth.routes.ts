@@ -32,15 +32,20 @@ router.patch(
   updateProfile
 );
 
+router.use(protect);
+
 router.patch(
   "/update-profile-picture",
-  protect,
   upload.single("profilePic"),
   updateProfilePicture
 );
 
-router.get("check", protect, (req, res) => {
-  res.status(200).json({ status: "success", message: "User is authenticated" });
+router.get("/check", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "User is authenticated",
+    data: { user: req.user },
+  });
 });
 
 export default router;

@@ -7,10 +7,17 @@ import { ENV } from "./lib/env.js";
 import cookieParser from "cookie-parser";
 import winston from "winston";
 import rateLimit from "express-rate-limit";
+import cors from "cors";
 
 const app = express();
 const PORT = ENV.PORT;
 
+app.use(
+  cors({
+    origin: ENV.CLIENT_URL,
+    credentials: true, // if you need to send cookies
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
