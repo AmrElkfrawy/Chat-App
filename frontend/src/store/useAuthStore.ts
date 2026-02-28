@@ -1,25 +1,8 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
+import { handleApiError } from "../lib/handleApiError";
 import toast from "react-hot-toast";
-import axios from "axios";
-
-interface AuthState {
-  authUser: object | null;
-  isCheckingAuth: boolean;
-  isAuthenticated: boolean;
-  isSigningUp: boolean;
-  isLoggingIn?: boolean;
-
-  checkAuth?: () => Promise<void>;
-  signup?: (data: {
-    fullName: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-  }) => Promise<void>;
-
-  login?: (data: { email: string; password: string }) => Promise<void>;
-}
+import type { AuthState, LoginData, SignupData } from "../types";
 
 export const useAuthStore = create<AuthState>((set) => ({
   authUser: null,
@@ -27,6 +10,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isCheckingAuth: false,
   isSigningUp: false,
+  isLoggingIn: false,
+  isLoggingOut: false,
 
   checkAuth: async () => {
     try {
@@ -41,47 +26,42 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  signup: async (data: {
-    fullName: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-  }) => {
+  signup: async (data: SignupData) => {
     try {
       set({ isSigningUp: true });
       const res = await axiosInstance.post("/auth/register", data);
       toast.success("Signup successful!");
       set({ authUser: res.data.user, isAuthenticated: true });
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const message =
-          error.response?.data?.message || "Signup failed. Please try again.";
-
-        toast.error(message);
-      } else {
-        toast.error("An unexpected error occurred, please try again.");
-      }
+      handleApiError(error, "Signup failed. Please try again.");
     } finally {
       set({ isSigningUp: false });
     }
   },
 
-  login: async (data: { email: string; password: string }) => {
+  login: async (data: LoginData) => {
     try {
       set({ isLoggingIn: true });
       const res = await axiosInstance.post("/auth/login", data);
       toast.success("Login successful!");
       set({ authUser: res.data.user, isAuthenticated: true });
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const message =
-          error.response?.data?.message || "Login failed. Please try again.";
-        toast.error(message);
-      } else {
-        toast.error("An unexpected error occurred, please try again.");
-      }
+      handleApiError(error, "Login failed. Please try again.");
     } finally {
       set({ isLoggingIn: false });
+    }
+  },
+
+  logout: async () => {
+    try {
+      set({ isLoggingOut: true });
+      await axiosInstance.post("/auth/logout");
+      set({ authUser: null, isAuthenticated: false });
+      toast.success("Logged out successfully.");
+    } catch (error) {
+      handleApiError(error, "Logout failed. Please try again.");
+    } finally {
+      set({ isLoggingOut: false });
     }
   },
 }));
