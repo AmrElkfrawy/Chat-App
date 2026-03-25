@@ -35,6 +35,8 @@ function SignupPage() {
       subtitle="Join us and start chatting!"
       imageSrc="/signup.png"
       imageAlt="Signup Illustration"
+      footerTitle="Join thousands of happy users!"
+      footerTags={["Free", "Easy", "Secure"]}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         <AuthFormField

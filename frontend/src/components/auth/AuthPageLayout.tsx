@@ -7,6 +7,8 @@ interface AuthPageLayoutProps {
   subtitle: string;
   imageSrc: string;
   imageAlt: string;
+  footerTitle: string;
+  footerTags: string[];
   children: React.ReactNode;
 }
 
@@ -15,6 +17,8 @@ function AuthPageLayout({
   subtitle,
   imageSrc,
   imageAlt,
+  footerTitle,
+  footerTags,
   children,
 }: AuthPageLayoutProps) {
   return (
@@ -40,7 +44,12 @@ function AuthPageLayout({
             </div>
 
             {/* Image Panel – right */}
-            <AuthImagePanel src={imageSrc} alt={imageAlt} />
+            <AuthImagePanel
+              src={imageSrc}
+              alt={imageAlt}
+              footerTitle={footerTitle}
+              footerTags={footerTags}
+            />
           </div>
         </BorderAnimatedContainer>
       </div>

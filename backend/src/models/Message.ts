@@ -29,9 +29,11 @@ const messageSchema = new mongoose.Schema<IMessage>(
       type: String,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
+messageSchema.index({ sender: 1 });
+messageSchema.index({ receiver: 1 });
 // add text index for searching messages
 messageSchema.index({ text: "text" });
 

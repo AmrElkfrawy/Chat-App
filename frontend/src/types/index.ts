@@ -8,6 +8,17 @@ export interface User {
   updatedAt: string;
 }
 
+// ─── Message ──────────────────────────────────────────────────────────────────
+export interface Message {
+  _id: string;
+  sender: User;
+  receiver: User;
+  text?: string;
+  image?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // ─── Auth form payloads ───────────────────────────────────────────────────────
 export interface SignupData {
   fullName: string;
@@ -34,4 +45,21 @@ export interface AuthState {
   signup: (data: SignupData) => Promise<void>;
   login: (data: LoginData) => Promise<void>;
   logout: () => Promise<void>;
+}
+
+export interface ChatState {
+  selectedUser: User | null;
+  isSoundEnabled: boolean;
+  activeTab: "chats" | "contacts";
+  allContacts: User[];
+  chats: User[];
+  messages: Message[];
+  isUsersLoading: boolean;
+  isMessagesLoading: boolean;
+
+  toggleSound: () => void;
+  setActiveTab: (tab: "chats" | "contacts") => void;
+  setSelectedUser: (user: User | null) => void;
+  getAllContacts: () => Promise<void>;
+  getMyChatPartners: () => Promise<void>;
 }

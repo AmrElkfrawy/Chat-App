@@ -28,6 +28,8 @@ function LoginPage() {
       subtitle="Log in to continue chatting!"
       imageSrc="/login.png"
       imageAlt="Login Illustration"
+      footerTitle="Welcome back to your conversations!"
+      footerTags={["Fast", "Secure", "Real-time"]}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         <AuthFormField

@@ -19,7 +19,7 @@ export const getAllContacts = asyncHandler(
       length: filteredUsers.length,
       data: filteredUsers,
     });
-  }
+  },
 );
 
 export const getMessagesByUserId = asyncHandler(
@@ -40,7 +40,7 @@ export const getMessagesByUserId = asyncHandler(
           { sender: otherUserId, receiver: loggedInUserId },
         ],
       }).populate("receiver", "fullName profilePic"),
-      req.query
+      req.query,
     );
 
     const messages = await query.filter().sort().paginate().query;
@@ -48,7 +48,7 @@ export const getMessagesByUserId = asyncHandler(
     return res
       .status(200)
       .json({ status: "success", length: messages.length, data: messages });
-  }
+  },
 );
 
 export const sendMessage = asyncHandler(
@@ -82,34 +82,30 @@ export const sendMessage = asyncHandler(
       image,
     });
     return res.status(201).json({ status: "success", data: newMessage });
-  }
+  },
 );
 
 export const getChatPartners = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = req.user?._id;
-    // Find all message where the logged-in user is either the sender or receiver
-    const messages = await Message.find({
-      $or: [{ sender: loggedInUserId }, { receiver: loggedInUserId }],
-    });
-    // Extract unique user IDs of chat partners
-    const chatPartnerIds = new Set<string>();
-    messages.forEach((msg) => {
-      if (msg.sender.toString() !== loggedInUserId.toString()) {
-        chatPartnerIds.add(msg.sender.toString());
-      }
-      if (msg.receiver.toString() !== loggedInUserId.toString()) {
-        chatPartnerIds.add(msg.receiver.toString());
-      }
-    });
-    // Fetch user details of chat partners
+
+    // Let MongoDB find unique IDs, never loading message content into memory
+    const [senderIds, receiverIds] = await Promise.all([
+      Message.distinct("sender", { receiver: loggedInUserId }),
+      Message.distinct("receiver", { sender: loggedInUserId }),
+    ]);
+
+    // Merge and deduplicate
+    const partnerIds = [...new Set([...senderIds, ...receiverIds])];
+
     const chatPartners = await User.find({
-      _id: { $in: Array.from(chatPartnerIds) },
-    }).select("-password ");
+      _id: { $in: partnerIds },
+    }).select("-password");
+
     return res.status(200).json({
       status: "success",
       length: chatPartners.length,
       data: chatPartners,
     });
-  }
+  },
 );
