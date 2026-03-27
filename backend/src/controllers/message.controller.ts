@@ -85,27 +85,103 @@ export const sendMessage = asyncHandler(
   },
 );
 
+// export const getChatPartners = asyncHandler(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const loggedInUserId = req.user?._id;
+
+//     // Let MongoDB find unique IDs, never loading message content into memory
+//     const [senderIds, receiverIds] = await Promise.all([
+//       Message.distinct("sender", { receiver: loggedInUserId }),
+//       Message.distinct("receiver", { sender: loggedInUserId }),
+//     ]);
+
+//     // Merge and deduplicate
+//     const partnerIds = [...new Set([...senderIds, ...receiverIds])];
+
+//     const chatPartners = await User.find({
+//       _id: { $in: partnerIds },
+//     }).select("-password");
+
+//     return res.status(200).json({
+//       status: "success",
+//       length: chatPartners.length,
+//       data: chatPartners,
+//     });
+//   },
+// );
+
 export const getChatPartners = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const loggedInUserId = req.user?._id;
 
-    // Let MongoDB find unique IDs, never loading message content into memory
     const [senderIds, receiverIds] = await Promise.all([
       Message.distinct("sender", { receiver: loggedInUserId }),
       Message.distinct("receiver", { sender: loggedInUserId }),
     ]);
 
-    // Merge and deduplicate
     const partnerIds = [...new Set([...senderIds, ...receiverIds])];
+
+    // For each partner, find the latest message between them and the logged-in user
+    const lastMessages = await Message.aggregate([
+      {
+        $match: {
+          $or: [
+            { sender: loggedInUserId, receiver: { $in: partnerIds } },
+            { sender: { $in: partnerIds }, receiver: loggedInUserId },
+          ],
+        },
+      },
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: {
+            // Normalize the pair so sender/receiver order doesn't matter
+            partner: {
+              $cond: [
+                { $eq: ["$sender", loggedInUserId] },
+                "$receiver",
+                "$sender",
+              ],
+            },
+          },
+          lastMessage: { $first: "$text" },
+          lastMessageAt: { $first: "$createdAt" },
+        },
+      },
+    ]);
+
+    // Build a lookup map for O(1) access
+    const lastMessageMap = new Map(
+      lastMessages.map((m) => [m._id.partner.toString(), m]),
+    );
 
     const chatPartners = await User.find({
       _id: { $in: partnerIds },
     }).select("-password");
 
+    const data = chatPartners.map((partner) => {
+      const meta = lastMessageMap.get(partner._id.toString());
+      return {
+        ...partner.toObject(),
+        lastMessage: meta?.lastMessage ?? null,
+        lastMessageAt: meta?.lastMessageAt ?? null,
+      };
+    });
+
+    // Sort by most recent conversation first
+    data.sort((a, b) => {
+      if (!a.lastMessageAt) return 1;
+      if (!b.lastMessageAt) return -1;
+      return (
+        new Date(b.lastMessageAt).getTime() -
+        new Date(a.lastMessageAt).getTime()
+      );
+    });
+
     return res.status(200).json({
       status: "success",
-      length: chatPartners.length,
-      data: chatPartners,
+      length: data.length,
+      data,
     });
   },
 );

@@ -12,12 +12,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   isSigningUp: false,
   isLoggingIn: false,
   isLoggingOut: false,
+  isUpdatingProfile: false,
 
   checkAuth: async () => {
     try {
       set({ isCheckingAuth: true });
       const res = await axiosInstance.get("/auth/check");
-      set({ authUser: res.data.user, isAuthenticated: true });
+      set({ authUser: res.data.data.user, isAuthenticated: true });
     } catch (error) {
       console.error("Auth check failed:", error);
       set({ authUser: null, isAuthenticated: false });
@@ -31,7 +32,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ isSigningUp: true });
       const res = await axiosInstance.post("/auth/register", data);
       toast.success("Signup successful!");
-      set({ authUser: res.data.user, isAuthenticated: true });
+      set({ authUser: res.data.data.user, isAuthenticated: true });
     } catch (error) {
       handleApiError(error, "Signup failed. Please try again.");
     } finally {
@@ -44,7 +45,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ isLoggingIn: true });
       const res = await axiosInstance.post("/auth/login", data);
       toast.success("Login successful!");
-      set({ authUser: res.data.user, isAuthenticated: true });
+      set({ authUser: res.data.data.user, isAuthenticated: true });
     } catch (error) {
       handleApiError(error, "Login failed. Please try again.");
     } finally {
@@ -62,6 +63,22 @@ export const useAuthStore = create<AuthState>((set) => ({
       handleApiError(error, "Logout failed. Please try again.");
     } finally {
       set({ isLoggingOut: false });
+    }
+  },
+
+  updateProfilePic: async (data: FormData) => {
+    try {
+      set({ isUpdatingProfile: true });
+      const res = await axiosInstance.patch(
+        "/auth/update-profile-picture",
+        data,
+      );
+      set({ authUser: res.data.data.user });
+      toast.success("Profile updated successfully.");
+    } catch (error) {
+      handleApiError(error, "Profile update failed. Please try again.");
+    } finally {
+      set({ isUpdatingProfile: false });
     }
   },
 }));

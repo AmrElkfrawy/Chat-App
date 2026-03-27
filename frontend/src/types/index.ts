@@ -1,5 +1,6 @@
 // ─── User ─────────────────────────────────────────────────────────────────────
 export interface User {
+  lastMessage?: string;
   _id: string;
   fullName: string;
   email: string;
@@ -40,11 +41,13 @@ export interface AuthState {
   isSigningUp: boolean;
   isLoggingIn: boolean;
   isLoggingOut: boolean;
+  isUpdatingProfile: boolean;
 
   checkAuth: () => Promise<void>;
   signup: (data: SignupData) => Promise<void>;
   login: (data: LoginData) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfilePic: (data: FormData) => Promise<void>;
 }
 
 export interface ChatState {
