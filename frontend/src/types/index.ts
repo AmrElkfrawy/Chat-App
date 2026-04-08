@@ -59,10 +59,13 @@ export interface ChatState {
   messages: Message[];
   isUsersLoading: boolean;
   isMessagesLoading: boolean;
+  isMessageSending: boolean;
 
   toggleSound: () => void;
   setActiveTab: (tab: "chats" | "contacts") => void;
   setSelectedUser: (user: User | null) => void;
   getAllContacts: () => Promise<void>;
   getMyChatPartners: () => Promise<void>;
+  getMessagesWithUserId: (userId: string) => Promise<void>;
+  sendMessage: (data: FormData) => Promise<void>;
 }

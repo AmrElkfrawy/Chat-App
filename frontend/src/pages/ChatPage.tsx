@@ -3,7 +3,7 @@ import ActiveTabSwitch from "../components/chat/ActiveTabSwitch";
 import ChatContainer from "../components/chat/ChatContainer";
 import ChatsList from "../components/chat/ChatsList";
 import ContactList from "../components/chat/ContactList";
-import NoConversionPlaceholder from "../components/chat/NoConversionPlaceholder";
+import NoConversationPlaceholder from "../components/chat/NoConversationPlaceholder";
 import ProfileHeader from "../components/chat/ProfileHeader";
 import { useChatStore } from "../store/useChatStore";
 
@@ -25,7 +25,7 @@ function ChatPage() {
 
         {/* RIGHT SIDE */}
         <div className="flex-1 flex flex-col bg-slate-900/50 backdrop-blur-sm w-240">
-          {selectedUser ? <ChatContainer /> : <NoConversionPlaceholder />}
+          {selectedUser ? <ChatContainer /> : <NoConversationPlaceholder />}
         </div>
       </BorderAnimatedContainer>
     </div>

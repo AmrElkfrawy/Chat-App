@@ -40,7 +40,7 @@ export const getMessagesByUserId = asyncHandler(
           { sender: otherUserId, receiver: loggedInUserId },
         ],
       }).populate("receiver", "fullName profilePic"),
-      req.query,
+      { sort: "createdAt" },
     );
 
     const messages = await query.filter().sort().paginate().query;

@@ -4,8 +4,13 @@ import UsersLoadingSkeleton from "./UsersLoadingSkeleton";
 import NoChatsFound from "./NoChatsFound";
 
 function ChatsList() {
-  const { getMyChatPartners, chats, isUsersLoading, setSelectedUser } =
-    useChatStore();
+  const {
+    getMyChatPartners,
+    chats,
+    isUsersLoading,
+    setSelectedUser,
+    selectedUser,
+  } = useChatStore();
 
   useEffect(() => {
     getMyChatPartners();
@@ -21,10 +26,10 @@ function ChatsList() {
           key={chat._id}
           onClick={() => setSelectedUser(chat)}
           style={{ animationDelay: `${i * 40}ms` }}
-          className="group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
+          className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
             hover:bg-slate-700/40 active:bg-slate-700/60
             transition-all duration-150 text-left
-            animate-[fadeSlideIn_0.3s_ease_both]"
+            animate-[fadeSlideIn_0.3s_ease_both] ${selectedUser?._id === chat._id ? "bg-slate-700/60" : ""}`}
         >
           {/* Avatar */}
           <div className="relative flex-shrink-0">

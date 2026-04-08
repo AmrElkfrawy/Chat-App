@@ -4,8 +4,13 @@ import UsersLoadingSkeleton from "./UsersLoadingSkeleton";
 import { UserSearchIcon } from "lucide-react";
 
 function ContactList() {
-  const { getAllContacts, allContacts, isUsersLoading, setSelectedUser } =
-    useChatStore();
+  const {
+    getAllContacts,
+    allContacts,
+    isUsersLoading,
+    setSelectedUser,
+    selectedUser,
+  } = useChatStore();
 
   useEffect(() => {
     getAllContacts();
@@ -35,10 +40,10 @@ function ContactList() {
           key={contact._id}
           onClick={() => setSelectedUser(contact)}
           style={{ animationDelay: `${i * 40}ms` }}
-          className="group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
+          className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
             hover:bg-slate-700/40 active:bg-slate-700/60
             transition-all duration-150 text-left
-            animate-[fadeSlideIn_0.3s_ease_both]"
+            animate-[fadeSlideIn_0.3s_ease_both] ${selectedUser?._id === contact._id ? "bg-slate-700/60" : ""}`}
         >
           {/* Avatar */}
           <div className="relative flex-shrink-0">

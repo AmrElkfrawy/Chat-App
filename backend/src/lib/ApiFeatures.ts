@@ -25,7 +25,7 @@ class APIFeatures {
       // escape special characters for regex
       const searchTerm = this.queryString.search.replace(
         /[.*+?^${}()|[\]\\]/g,
-        "\\$&"
+        "\\$&",
       );
       const regex = new RegExp(searchTerm, "i");
 
@@ -34,7 +34,7 @@ class APIFeatures {
       if (!searchField) {
         throw new AppError(
           "searchField query parameter is required when using search",
-          400
+          400,
         );
       }
       this.query = this.query.find({ [searchField]: { $regex: regex } });

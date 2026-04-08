@@ -12,6 +12,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   isUsersLoading: false,
   isMessagesLoading: false,
   isSoundEnabled: localStorage.getItem("soundEnabled") === "true",
+  isMessageSending: false,
 
   toggleSound: () => {
     localStorage.setItem("soundEnabled", !get().isSoundEnabled + "");
@@ -39,6 +40,38 @@ export const useChatStore = create<ChatState>((set, get) => ({
       handleApiError(error, "Couldn't fetch chats, Please try again!");
     } finally {
       set({ isUsersLoading: false });
+    }
+  },
+
+  getMessagesWithUserId: async (userId: string) => {
+    try {
+      set({ isMessagesLoading: true });
+      const res = await axiosInstance.get(`/messages/${userId}`);
+      set({ messages: res.data.data });
+    } catch (error) {
+      handleApiError(error, "Couldn't fetch messages, Please try again!");
+    } finally {
+      set({ isMessagesLoading: false });
+    }
+  },
+
+  sendMessage: async (data: FormData) => {
+    try {
+      set({ isMessageSending: true });
+      const { selectedUser } = get();
+      if (!selectedUser) {
+        throw new Error("No recipient selected.");
+      }
+      const res = await axiosInstance.post(
+        `/messages/send/${selectedUser._id}`,
+        data,
+      );
+      set({ messages: [...get().messages, res.data.data] });
+    } catch (error) {
+      handleApiError(error, "Couldn't send message, Please try again!");
+      throw error;
+    } finally {
+      set({ isMessageSending: false });
     }
   },
 }));
