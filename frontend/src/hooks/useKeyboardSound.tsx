@@ -7,7 +7,6 @@ const keyStrokeSounds: HTMLAudioElement[] = [
   new Audio("/sounds/keystroke2.mp3"),
   new Audio("/sounds/keystroke3.mp3"),
   new Audio("/sounds/keystroke4.mp3"),
-  new Audio("/sounds/keystroke5.mp3"),
 ];
 
 function useKeyboardSound(): KeyboardSound {

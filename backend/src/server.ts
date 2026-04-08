@@ -8,17 +8,17 @@ import cookieParser from "cookie-parser";
 import winston from "winston";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
+import { server, app } from "./lib/socket.js";
 
-const app = express();
 const PORT = ENV.PORT;
 
 app.use(
   cors({
     origin: ENV.CLIENT_URL,
     credentials: true, // if you need to send cookies
-  })
+  }),
 );
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
@@ -41,7 +41,7 @@ const logger = winston.createLogger({
   level: "info",
   format: winston.format.combine(
     winston.format.timestamp(),
-    winston.format.json()
+    winston.format.json(),
   ),
   transports: [new winston.transports.File({ filename: "logs/logs.log" })],
 });
@@ -56,7 +56,7 @@ app.use("/api/", apiRouter);
 // Fallback
 app.all("/{*any}", (req, res, next) => {
   return next(
-    new AppError(`Can't find ${req.originalUrl} on this server!`, 404)
+    new AppError(`Can't find ${req.originalUrl} on this server!`, 404),
   );
 });
 
@@ -65,7 +65,7 @@ app.use(globalErrorHandler);
 
 // Connect to DB then start server
 connectDB().then(() => {
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
   });
 });

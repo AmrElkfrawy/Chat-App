@@ -5,7 +5,7 @@ import { useAuthStore } from "../../store/useAuthStore";
 const mouseClickSound = new Audio("/sounds/mouse-click.mp3");
 
 function ProfileHeader() {
-  const { logout, authUser, updateProfilePic, isUpdatingProfile } =
+  const { logout, authUser, updateProfilePic, isUpdatingProfile, onlineUsers } =
     useAuthStore();
   const { isSoundEnabled, toggleSound } = useChatStore();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -26,7 +26,9 @@ function ProfileHeader() {
       <div className="flex items-center justify-between">
         {/* Left — Avatar + User Info */}
         <div className="flex items-center gap-3">
-          <div className="avatar avatar-online group">
+          <div
+            className={`avatar ${onlineUsers.includes(authUser?._id) ? "avatar-online" : "avatar-offline"}`}
+          >
             {/*  */}
             <div
               className="w-10 rounded-full overflow-hidden cursor-pointer relative"
@@ -62,7 +64,9 @@ function ProfileHeader() {
             <h3 className="text-slate-200 font-medium text-sm max-w-[160px] truncate leading-tight">
               {authUser?.fullName}
             </h3>
-            <p className="text-slate-400 text-xs">Online</p>
+            <p className="text-slate-400 text-xs">
+              {onlineUsers.includes(authUser?._id) ? "Online" : "Offline"}
+            </p>
           </div>
         </div>
 

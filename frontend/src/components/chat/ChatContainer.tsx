@@ -7,8 +7,14 @@ import ChatHeader from "./ChatHeader";
 import MessagesLoadingSkeleton from "./MessagesLoadingSkeleton";
 
 function ChatContainer() {
-  const { selectedUser, getMessagesWithUserId, messages, isMessagesLoading } =
-    useChatStore();
+  const {
+    selectedUser,
+    getMessagesWithUserId,
+    messages,
+    isMessagesLoading,
+    subscribeToNewMessages,
+    unsubscribeFromNewMessages,
+  } = useChatStore();
   const { authUser } = useAuthStore();
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -22,6 +28,19 @@ function ChatContainer() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Subscribe to new messages via socket
+  useEffect(() => {
+    if (selectedUser) {
+      subscribeToNewMessages(() => {
+        // Scroll to bottom when a new message arrives
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      });
+    }
+    return () => {
+      unsubscribeFromNewMessages();
+    };
+  }, [selectedUser, subscribeToNewMessages, unsubscribeFromNewMessages]);
 
   const isMe = (senderId: string) => senderId === authUser?._id;
 

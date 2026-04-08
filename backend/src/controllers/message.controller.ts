@@ -6,6 +6,7 @@ import type { Request, Response, NextFunction } from "express";
 import { uploadSingleToCloudinary } from "../lib/cloudinary.js";
 import asyncHandler from "../lib/asyncHandler.js";
 import APIFeatures from "../lib/ApiFeatures.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 
 export const getAllContacts = asyncHandler(
   async (req: Request, res: Response) => {
@@ -70,6 +71,10 @@ export const sendMessage = asyncHandler(
       image = uploadResult.secure_url;
     }
     // check if receiver exists
+    if (receiverId === loggedInUserId) {
+      return next(new AppError("Cannot send message to yourself", 400));
+    }
+
     const receiver = await User.findById(receiverId);
     if (!receiver) {
       return next(new AppError("Receiver not found", 404));
@@ -81,6 +86,14 @@ export const sendMessage = asyncHandler(
       text,
       image,
     });
+
+    const recieverSocketId = getReceiverSocketId(receiverId);
+    if (recieverSocketId) {
+      io.to(recieverSocketId).emit("newMessage", {
+        ...newMessage.toObject(),
+      });
+    }
+
     return res.status(201).json({ status: "success", data: newMessage });
   },
 );

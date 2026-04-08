@@ -1,8 +1,10 @@
 import { XIcon } from "lucide-react";
 import { useChatStore } from "../../store/useChatStore";
 import { useEffect } from "react";
+import { useAuthStore } from "../../store/useAuthStore";
 
 function ChatHeader() {
+  const { onlineUsers } = useAuthStore();
   const { selectedUser, setSelectedUser } = useChatStore();
 
   useEffect(() => {
@@ -28,7 +30,9 @@ function ChatHeader() {
             </div>
           </div>
           {/* Online dot */}
-          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-slate-800" />
+          {onlineUsers.includes(selectedUser?._id || "") && (
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-slate-800" />
+          )}
         </div>
 
         <div>
@@ -36,8 +40,17 @@ function ChatHeader() {
             {selectedUser?.fullName}
           </h3>
           <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <p className="text-emerald-400/80 text-xs">Online</p>
+            {onlineUsers.includes(selectedUser?._id || "") ? (
+              <>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <p className="text-emerald-400/80 text-xs">Online</p>
+              </>
+            ) : (
+              <>
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-500 animate-pulse" />
+                <p className="text-slate-400/80 text-xs">Offline</p>
+              </>
+            )}
           </div>
         </div>
       </div>

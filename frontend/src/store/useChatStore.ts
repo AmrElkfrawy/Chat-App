@@ -2,7 +2,8 @@ import { create } from "zustand";
 import type { ChatState } from "../types";
 import { axiosInstance } from "../lib/axios";
 import { handleApiError } from "../lib/handleApiError";
-
+import { useAuthStore } from "./useAuthStore";
+const audio = new Audio("/sounds/notification.mp3");
 export const useChatStore = create<ChatState>((set, get) => ({
   allContacts: [],
   chats: [],
@@ -73,5 +74,35 @@ export const useChatStore = create<ChatState>((set, get) => ({
     } finally {
       set({ isMessageSending: false });
     }
+  },
+
+  subscribeToNewMessages: () => {
+    const { selectedUser, isSoundEnabled } = get();
+    if (!selectedUser) return;
+
+    const socket = useAuthStore.getState().socket;
+    if (!socket) return;
+
+    socket.off("newMessage");
+
+    socket.on("newMessage", (newMessage: any) => {
+      const isMessageFromSelectedUser = newMessage.sender === selectedUser._id;
+
+      if (isMessageFromSelectedUser) {
+        set({
+          messages: [...get().messages, newMessage],
+        });
+      }
+
+      if (isSoundEnabled) {
+        const sound = audio.cloneNode() as HTMLAudioElement;
+        sound.play().catch((e) => console.log("Audio blocked"));
+      }
+    });
+  },
+
+  unsubscribeFromNewMessages: () => {
+    const socket = useAuthStore.getState().socket;
+    socket?.off("newMessage");
   },
 }));
