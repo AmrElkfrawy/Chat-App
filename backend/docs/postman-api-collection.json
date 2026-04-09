@@ -1,0 +1,341 @@
+{
+  "info": {
+    "_postman_id": "d3e16438-85ef-4114-ba6d-aef8b0506bb3",
+    "name": "Chat App",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "28844817"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "login",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\":\"amr2@example.com\",\r\n    \"password\":\"test1234\" \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}api/auth/login",
+              "host": ["{{url}}api"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{url}}api/auth/logout",
+              "host": ["{{url}}api"],
+              "path": ["auth", "logout"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "register",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\":\"amr@email.com\",\r\n    \"fullName\":\"Amr Elkfrawy\",\r\n    \"password\":\"test1234\",\r\n    \"confirmPassword\":\"test1234\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}api/auth/register",
+              "host": ["{{url}}api"],
+              "path": ["auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Check Auth",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}api/auth/check",
+              "host": ["{{url}}api"],
+              "path": ["auth", "check"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Update Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"fullName\":\"amro\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}api/auth/update-profile",
+              "host": ["{{url}}api"],
+              "path": ["auth", "update-profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile Picture",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "profilePic",
+                  "type": "file",
+                  "uuid": "ba98d188-da1c-4e63-bcde-8dc6bab8bf07",
+                  "src": "/C:/Users/amr/Downloads/2.jpeg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{url}}api/auth/update-profile-picture",
+              "host": ["{{url}}api"],
+              "path": ["auth", "update-profile-picture"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Send Message",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "text",
+                  "value": "From Amr2",
+                  "type": "text",
+                  "uuid": "7552ef8e-3f83-47b8-a0b8-e851e88a1244"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "1a84d644-39ff-40a4-b801-403cc3b87162",
+                  "src": "/C:/Users/amr/Downloads/marek-piwnicki-_X2pRyHkGQs-unsplash.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{url}}api/messages/send/:id",
+              "host": ["{{url}}api"],
+              "path": ["messages", "send", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "69d4ea62c052e0e783d18071"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Messages By user ID",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"fullName\":\"amro\"\r\n}"
+            },
+            "url": {
+              "raw": "{{url}}api/messages/:id",
+              "host": ["{{url}}api"],
+              "path": ["messages", ":id"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "hi",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "searchField",
+                  "value": "text",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "-text",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "3",
+                  "type": "text",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "690257f2d64e37acfa51b9b1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Contacts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}api/messages/contacts",
+              "host": ["{{url}}api"],
+              "path": ["messages", "contacts"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Chat Partners",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}api/messages/chats",
+              "host": ["{{url}}api"],
+              "path": ["messages", "chats"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

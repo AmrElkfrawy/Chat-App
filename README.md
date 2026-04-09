@@ -17,7 +17,7 @@ A full-stack real-time chat application built with a Node.js/Express backend and
 - Joi — request validation
 - Winston — file-based request logging
 - express-rate-limit — API rate limiting (100 req/hr per IP)
-- Docker (dockerfile included) `TODO: dockerize the app`
+- Docker (dockerfile included) `TODO`
 
 **Frontend**
 
@@ -123,6 +123,22 @@ App runs at `http://localhost:5173`.
 | GET    | `/api/messages/chat-partners`      | Conversations with last message |
 | GET    | `/api/messages/:id`                | Message history with a user     |
 | POST   | `/api/messages/send/:id`           | Send a message (text or image)  |
+
+## API Documentation
+
+A complete Postman collection is available in [`Postman API Collection`](/backend/docs/postman-api-collection.json) for testing all endpoints.
+
+## TODO
+
+- Dockerize the app (backend + frontend)
+- Add Test cases (Jest + React Testing Library)
+- Feature:
+  - Sending verifying emails on registration, password reset flow
+  - Read receipts
+  - Group chats
+  - Real-time typing indicators, unread message counts, and chat list updates
+  - Optimistic message sending on the frontend for instant UI feedback
+  - User search for starting new conversations
 
 ---
 
