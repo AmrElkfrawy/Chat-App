@@ -139,9 +139,3 @@ A complete Postman collection is available in [`Postman API Collection`](/backen
   - Real-time typing indicators, unread message counts, and chat list updates
   - Optimistic message sending on the frontend for instant UI feedback
   - User search for starting new conversations
-
----
-
-## Author
-
-**Amr Elkfrawy** — [github.com/AmrElkfrawy](https://github.com/AmrElkfrawy)
